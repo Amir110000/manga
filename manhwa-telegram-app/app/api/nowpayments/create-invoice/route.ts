@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { PrismaClient } from "@/app/generated/prisma";
+import { requireUser } from "@/app/lib/auth";
 
 const prisma = new PrismaClient();
 
 const bodySchema = z.object({
   type: z.enum(["WALLET_TOPUP", "SUBSCRIPTION"]),
-  amountCents: z.number().int().positive(),
+  amountCents: z.number().int().nonnegative().default(0),
   payCurrency: z.enum(["TRX", "TON"]).default("TRX"),
   planId: z.string().optional(),
   orderId: z.string().optional(),
@@ -14,17 +15,21 @@ const bodySchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await requireUser();
     const json = await req.json();
-    const { type, amountCents, payCurrency, planId } = bodySchema.parse(json);
+    const { type, payCurrency, planId } = bodySchema.parse(json);
 
-    // TODO: replace with real auth (Telegram WebApp initData)
-    const userIdHeader = req.headers.get("x-user-id");
-    if (!userIdHeader) {
-      return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+    let amountCents = json.amountCents ?? 0;
+    if (type === "SUBSCRIPTION") {
+      if (!planId) return NextResponse.json({ error: "planId required" }, { status: 400 });
+      const plan = await prisma.subscriptionPlan.findUnique({ where: { id: planId } });
+      if (!plan || !plan.isActive) return NextResponse.json({ error: "invalid plan" }, { status: 400 });
+      amountCents = plan.priceCents;
     }
 
-    const user = await prisma.user.findUnique({ where: { id: userIdHeader } });
-    if (!user) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+    if (type === "WALLET_TOPUP" && amountCents <= 0) {
+      return NextResponse.json({ error: "amountCents > 0 required for topup" }, { status: 400 });
+    }
 
     const orderId = json.orderId || `rh_${Date.now()}`;
 
@@ -47,7 +52,7 @@ export async function POST(req: NextRequest) {
       order_description: type,
       success_url: `${process.env.TELEGRAM_BOT_WEBAPP_URL}/payment/success?orderId=${orderId}`,
       cancel_url: `${process.env.TELEGRAM_BOT_WEBAPP_URL}/payment/cancel?orderId=${orderId}`,
-    };
+    } as const;
 
     const res = await fetch(`${baseUrl}/invoice`, {
       method: "POST",

@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     const body = JSON.parse(raw);
     const orderId: string | undefined = body.order_id;
     const paymentStatus: string | undefined = body.payment_status; // e.g., finished, partially_paid, failed, expired
-    const payAmount: number | undefined = body.pay_amount ? Number(body.pay_amount) : undefined;
+    const priceAmount: number | undefined = body.price_amount ? Number(body.price_amount) : undefined;
     const payCurrency: string | undefined = body.pay_currency;
 
     if (!orderId) return NextResponse.json({ ok: true });
@@ -45,14 +45,15 @@ export async function POST(req: NextRequest) {
 
         // Wallet top-up
         if (payment.type === "WALLET_TOPUP") {
+          const inc = Math.round((priceAmount ?? 0) * 100);
           await tx.wallet.update({
             where: { userId: payment.userId },
-            data: { balance: { increment: Math.round((payAmount ?? 0) * 100) } },
+            data: { balance: { increment: inc } },
           });
           await tx.transaction.create({
             data: {
               userId: payment.userId,
-              amount: Math.round((payAmount ?? 0) * 100),
+              amount: inc,
               type: "DEPOSIT",
               description: `NOWPayments ${payCurrency}`,
             },
