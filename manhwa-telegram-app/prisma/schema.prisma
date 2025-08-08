@@ -34,6 +34,19 @@ enum Weekday {
   SUN
 }
 
+enum PaymentType {
+  WALLET_TOPUP
+  SUBSCRIPTION
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  PARTIALLY_PAID
+  FAILED
+  EXPIRED
+}
+
 model User {
   id           String   @id @default(cuid())
   telegramId   String   @unique
@@ -46,6 +59,7 @@ model User {
   wallet       Wallet?
   transactions Transaction[]
   subscriptions Subscription[]
+  payments     Payment[]
 }
 
 model Wallet {
@@ -74,6 +88,7 @@ model SubscriptionPlan {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   subscriptions Subscription[]
+  payments     Payment[]
 }
 
 model Subscription {
@@ -127,4 +142,23 @@ model WeeklySchedule {
   manhwa    Manhwa  @relation(fields: [manhwaId], references: [id])
   manhwaId  String
   weekday   Weekday
+}
+
+model Payment {
+  id              String         @id @default(cuid())
+  user            User           @relation(fields: [userId], references: [id])
+  userId          String
+  type            PaymentType
+  amountCents     Int
+  priceCurrency   String         @default("USD")
+  payCurrency     String
+  status          PaymentStatus  @default(PENDING)
+  orderId         String         @unique
+  invoiceId       String?
+  invoiceUrl      String?
+  providerPaymentId String?
+  plan            SubscriptionPlan? @relation(fields: [planId], references: [id])
+  planId          String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
