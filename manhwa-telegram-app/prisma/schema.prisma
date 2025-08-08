@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAW
+  PURCHASE
+  SUBSCRIPTION
+}
+
+enum ManhwaStatus {
+  ONGOING
+  COMPLETED
+  HIATUS
+}
+
+enum Weekday {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+  SAT
+  SUN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  telegramId   String   @unique
+  username     String? 
+  firstName    String? 
+  lastName     String? 
+  photoUrl     String? 
+  isAdmin      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  wallet       Wallet?
+  transactions Transaction[]
+  subscriptions Subscription[]
+}
+
+model Wallet {
+  id        String  @id @default(cuid())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String  @unique
+  balance   Int     @default(0) // store in cents to avoid float
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id          String           @id @default(cuid())
+  user        User             @relation(fields: [userId], references: [id])
+  userId      String
+  amount      Int              // in cents
+  type        TransactionType
+  description String?
+  createdAt   DateTime         @default(now())
+}
+
+model SubscriptionPlan {
+  id           String   @id @default(cuid())
+  name         String
+  priceCents   Int      // in cents
+  durationDays Int
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id        String            @id @default(cuid())
+  user      User              @relation(fields: [userId], references: [id])
+  userId    String
+  plan      SubscriptionPlan  @relation(fields: [planId], references: [id])
+  planId    String
+  startsAt  DateTime
+  endsAt    DateTime
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+}
+
+model Manhwa {
+  id            String        @id @default(cuid())
+  title         String
+  slug          String        @unique
+  description   String?
+  coverImageUrl String?
+  status        ManhwaStatus  @default(ONGOING)
+  isFeatured    Boolean       @default(false)
+  genres        String?       // comma separated
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  chapters      Chapter[]
+  schedules     WeeklySchedule[]
+}
+
+model Chapter {
+  id          String   @id @default(cuid())
+  manhwa      Manhwa   @relation(fields: [manhwaId], references: [id])
+  manhwaId    String
+  number      Float
+  title       String?
+  releaseDate DateTime @default(now())
+  isPremium   Boolean  @default(false)
+  pages       ChapterPage[]
+}
+
+model ChapterPage {
+  id        String  @id @default(cuid())
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+  chapterId String
+  index     Int
+  imagePath String // stored under public/uploads
+}
+
+model WeeklySchedule {
+  id        String  @id @default(cuid())
+  manhwa    Manhwa  @relation(fields: [manhwaId], references: [id])
+  manhwaId  String
+  weekday   Weekday
+}
