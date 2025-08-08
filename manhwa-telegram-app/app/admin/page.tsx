@@ -9,6 +9,7 @@ export default function AdminHome() {
         <li><Link className="text-accent" href="/admin/plans">پلن‌های اشتراک</Link></li>
         <li><Link className="text-accent" href="/admin/schedule">جدول هفتگی</Link></li>
         <li><Link className="text-accent" href="/admin/slider">اسلایدر</Link></li>
+        <li><Link className="text-accent" href="/admin/chapters">ایجاد چپتر</Link></li>
       </ul>
     </main>
   );
