@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { getCurrentUser } from "@/app/lib/auth";
+import { put } from "@vercel/blob";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +14,21 @@ export async function POST(req: NextRequest) {
   const files = form.getAll("files");
   if (!files || files.length === 0) return NextResponse.json({ error: "No files" }, { status: 400 });
 
+  const useBlob = !!process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL === "1";
+  const saved: string[] = [];
+
+  if (useBlob) {
+    for (const entry of files) {
+      if (!(entry instanceof File)) continue;
+      const name = `chapters/${Date.now()}_${entry.name}`;
+      const result = await put(name, entry, { access: "public", addRandomSuffix: true });
+      saved.push(result.url);
+    }
+    return NextResponse.json({ files: saved });
+  }
+
   const uploadDir = path.join(process.cwd(), "public", "uploads");
   await fs.mkdir(uploadDir, { recursive: true });
-
-  const saved: string[] = [];
   for (const entry of files) {
     if (!(entry instanceof File)) continue;
     const arrayBuffer = await entry.arrayBuffer();
