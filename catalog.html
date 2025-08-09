@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Manhwa Catalog - Manhwa Store</title>
+
+    <!-- css files -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.2/css/all.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/store.css">
+    <style>
+        .filters-sidebar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .filter-section {
+            margin-bottom: 20px;
+        }
+        .filter-section h6 {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ab201c;
+        }
+        .price-range-slider {
+            margin: 10px 0;
+        }
+        .sort-options {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .catalog-results {
+            min-height: 600px;
+        }
+        .pagination-custom {
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .view-toggle {
+            margin-left: auto;
+        }
+        .grid-view .product-card {
+            margin-bottom: 30px;
+        }
+        .list-view .product-card {
+            display: flex;
+            margin-bottom: 20px;
+            height: 200px;
+        }
+        .list-view .product-image {
+            flex: 0 0 150px;
+            margin-right: 20px;
+        }
+        .list-view .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .breadcrumb-custom {
+            background: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .breadcrumb-custom .breadcrumb-item + .breadcrumb-item::before {
+            color: #ab201c;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- start navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow py-2 py-sm-0">
+        <a class="navbar-brand" href="index.html">
+            <h5><i class="fas fa-book-open"></i> Manhwa Store</h5>
+        </a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="container-fluid">
+                <div class="row py-3">
+                    <div class="col-lg-6 col-sm-12 mb-3 mb-sm-0">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="index.html">Home</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="catalog.html">Catalog<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="index.html#new-releases">New Releases</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="index.html#bestsellers">Bestsellers</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Genres
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="catalog.html?genre=romance">Romance</a>
+                                    <a class="dropdown-item" href="catalog.html?genre=action">Action</a>
+                                    <a class="dropdown-item" href="catalog.html?genre=fantasy">Fantasy</a>
+                                    <a class="dropdown-item" href="catalog.html?genre=drama">Drama</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="catalog.html">All Genres</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <form class="form-inline search">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search manhwa titles, authors..."
+                                    aria-label="Search manhwa">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button"><i
+                                            class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="profile float-right">
+            <div class="cart">
+                <button class="btn" type="button" id="cartDropdown" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                    <i class="fa fa-shopping-cart fa-2x"></i>
+                    <span class="cart-count badge badge-danger">0</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right cart-dropdown" aria-labelledby="cartDropdown">
+                    <div class="cart-items">
+                        <div class="empty-cart text-center py-3">
+                            <i class="fas fa-shopping-cart fa-2x text-muted"></i>
+                            <p class="text-muted mt-2">Your cart is empty</p>
+                        </div>
+                    </div>
+                    <div class="cart-footer">
+                        <hr>
+                        <div class="cart-total text-center">
+                            <strong>Total: $<span id="cart-total">0.00</span></strong>
+                        </div>
+                        <div class="text-center mt-2">
+                            <a href="cart.html" class="btn btn-primary btn-sm">View Cart</a>
+                            <a href="checkout.html" class="btn btn-success btn-sm">Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="wishlist">
+                <button class="btn" type="button" id="wishlistDropdown" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                    <i class="fa fa-heart fa-2x"></i>
+                    <span class="wishlist-count badge badge-info">0</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="wishlistDropdown">
+                    <a class="dropdown-item" href="wishlist.html">View all wishlist items</a>
+                </div>
+            </div>
+            <div class="account">
+                <button class="btn" type="button" id="accountDropdown" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                <i class="fa fa-user-circle fa-2x"></i><i class="fa fa-angle-down"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountDropdown">
+                    <a class="dropdown-item" href="login.html">Login</a>
+                    <a class="dropdown-item" href="register.html">Register</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="profile.html">My Account</a>
+                    <a class="dropdown-item" href="orders.html">My Orders</a>
+                    <a class="dropdown-item" href="logout.html">Logout</a>
+                </div>
+            </div>
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+    <!-- end navbar-->
+
+    <!-- start breadcrumb -->
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-custom">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Catalog</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- end breadcrumb -->
+
+    <!-- start catalog -->
+    <div class="container">
+        <div class="row">
+            <!-- Filters Sidebar -->
+            <div class="col-lg-3 col-md-4">
+                <div class="filters-sidebar">
+                    <h5 class="mb-3"><i class="fas fa-filter"></i> Filters</h5>
+                    
+                    <!-- Genre Filter -->
+                    <div class="filter-section">
+                        <h6>Genre</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="action" id="genre-action">
+                            <label class="form-check-label" for="genre-action">Action (38)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="romance" id="genre-romance">
+                            <label class="form-check-label" for="genre-romance">Romance (42)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="fantasy" id="genre-fantasy">
+                            <label class="form-check-label" for="genre-fantasy">Fantasy (29)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="drama" id="genre-drama">
+                            <label class="form-check-label" for="genre-drama">Drama (35)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="comedy" id="genre-comedy">
+                            <label class="form-check-label" for="genre-comedy">Comedy (22)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="thriller" id="genre-thriller">
+                            <label class="form-check-label" for="genre-thriller">Thriller (18)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="supernatural" id="genre-supernatural">
+                            <label class="form-check-label" for="genre-supernatural">Supernatural (25)</label>
+                        </div>
+                    </div>
+
+                    <!-- Price Filter -->
+                    <div class="filter-section">
+                        <h6>Price Range</h6>
+                        <div class="price-range-slider">
+                            <input type="range" class="form-range" id="priceRange" min="5" max="30" value="30" step="1">
+                            <div class="d-flex justify-content-between">
+                                <small>$5</small>
+                                <small id="priceValue">$30</small>
+                                <small>$30</small>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priceRange" value="5-15" id="price-1">
+                                <label class="form-check-label" for="price-1">$5 - $15</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priceRange" value="15-25" id="price-2">
+                                <label class="form-check-label" for="price-2">$15 - $25</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="priceRange" value="25-35" id="price-3">
+                                <label class="form-check-label" for="price-3">$25+</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rating Filter -->
+                    <div class="filter-section">
+                        <h6>Rating</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="5" id="rating-5">
+                            <label class="form-check-label" for="rating-5">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                5 Stars
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="4" id="rating-4">
+                            <label class="form-check-label" for="rating-4">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="far fa-star text-warning"></i>
+                                4+ Stars
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="3" id="rating-3">
+                            <label class="form-check-label" for="rating-3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="far fa-star text-warning"></i>
+                                <i class="far fa-star text-warning"></i>
+                                3+ Stars
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="filter-section">
+                        <h6>Status</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="completed" id="status-completed">
+                            <label class="form-check-label" for="status-completed">Completed</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="ongoing" id="status-ongoing">
+                            <label class="form-check-label" for="status-ongoing">Ongoing</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="hiatus" id="status-hiatus">
+                            <label class="form-check-label" for="status-hiatus">On Hiatus</label>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filters -->
+                    <div class="mt-3">
+                        <button class="btn btn-outline-secondary btn-sm btn-block" id="clearFilters">
+                            <i class="fas fa-times"></i> Clear All Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9 col-md-8">
+                <!-- Sort and View Options -->
+                <div class="sort-options d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted">Showing <span id="resultsCount">156</span> results</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="mr-3">
+                            <label for="sortBy" class="mr-2">Sort by:</label>
+                            <select class="form-control form-control-sm d-inline-block" id="sortBy" style="width: auto;">
+                                <option value="newest">Newest</option>
+                                <option value="oldest">Oldest</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="rating">Rating</option>
+                                <option value="name">Title A-Z</option>
+                                <option value="popularity">Popularity</option>
+                            </select>
+                        </div>
+                        <div class="view-toggle">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm active" data-view="grid">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-view="list">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="productsGrid" class="catalog-results mt-4">
+                    <div class="row grid-view" id="productsContainer">
+                        <!-- Products will be dynamically loaded here -->
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Catalog pagination">
+                    <ul class="pagination pagination-custom" id="catalogPagination">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">4</a></li>
+                        <li class="page-item"><a class="page-link" href="#">5</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- end catalog -->
+
+    <!-- start footer -->
+    <footer class="mt-5">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Manhwa Store</h5>
+                    <p class="text-muted">Your premier destination for Korean webtoons and manhwa. Discover amazing stories and support creators.</p>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6>Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="catalog.html" class="text-muted">Browse Catalog</a></li>
+                        <li><a href="#" class="text-muted">New Releases</a></li>
+                        <li><a href="#" class="text-muted">Bestsellers</a></li>
+                        <li><a href="#" class="text-muted">Free Samples</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6>Customer Service</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted">Contact Us</a></li>
+                        <li><a href="#" class="text-muted">FAQ</a></li>
+                        <li><a href="#" class="text-muted">Returns</a></li>
+                        <li><a href="#" class="text-muted">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-5 col-md-6 mb-4">
+                    <h6>Newsletter</h6>
+                    <p class="text-muted">Subscribe to get updates on new manhwa releases!</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">Subscribe</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <span class="copyright text-muted">&copy; 2024 Manhwa Store. All rights reserved.</span>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <span class="text-muted">Secure payments powered by Stripe</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- end footer -->
+
+    <!-- js files -->
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/catalog.js"></script>
+</body>
+
+</html>
